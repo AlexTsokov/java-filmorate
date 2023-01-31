@@ -2,9 +2,12 @@ package ru.yandex.practicum.filmorate.Validators;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.yandex.practicum.filmorate.Exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 public class UserValidator {
     private static final Logger log = LoggerFactory.getLogger(UserValidator.class);
@@ -22,5 +25,12 @@ public class UserValidator {
             log.error("Дата рождения в будущем");
             return false;
         } else return true;
+    }
+
+    public static void noFoundUser(User user, Map<Integer, User> users) {
+        if (!users.containsKey(user.getId())) {
+            log.info("Проверка, существует ли пользователь");
+            throw new ValidationException("Такого пользователя нет");
+        }
     }
 }

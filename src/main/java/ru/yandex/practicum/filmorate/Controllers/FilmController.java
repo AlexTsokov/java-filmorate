@@ -16,7 +16,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private final Map<String, Film> films = new HashMap<>();
+    private final Map<Integer, Film> films = new HashMap<>();
     private static final Logger log = LoggerFactory.getLogger(FilmController.class);
     Integer filmId = 0;
 
@@ -29,13 +29,13 @@ public class FilmController {
     public Film create(@RequestBody Film film) {
         if (!FilmValidator.validate(film))
             throw new ValidationException("Ошибка валидации");
-        if (films.containsKey(film.getName())) {
+        if (films.containsKey(film.getId())) {
             throw new FilmAlreadyExistException("Фильм " +
                     film.getName() + " уже добавлен.");
         } else {
             Integer id = generateFilmId();
             film.setId(id);
-            films.put(film.getName(), film);
+            films.put(film.getId(), film);
             log.info("Добавлен фильм " + film.getName());
         }
         return film;
@@ -45,8 +45,11 @@ public class FilmController {
     public Film put(@RequestBody Film film) {
         if (!FilmValidator.validate(film))
             throw new ValidationException("Ошибка валидации");
-        else films.put(film.getName(), film);
-        log.info("Обновлены данные фильма " + film.getName());
+        else {
+            FilmValidator.noFoundFilm(film, films);
+            films.put(film.getId(), film);
+            log.info("Обновлены данные фильма " + film.getName());
+        }
         return film;
     }
 

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.Controllers;
 
+import org.apache.el.util.Validation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.yandex.practicum.filmorate.Exception.UserAlreadyExistException;
@@ -16,7 +17,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private final Map<String, User> users = new HashMap<>();
+    private final Map<Integer, User> users = new HashMap<>();
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private Integer userId = 0;
 
@@ -29,13 +30,13 @@ public class UserController {
     public User create(@RequestBody User user) {
         if (!UserValidator.validate(user))
             throw new ValidationException("Ошибка валидации");
-        if (users.containsKey(user.getEmail())) {
+        if (users.containsKey(user.getId())) {
             throw new UserAlreadyExistException("Пользователь с электронной почтой " +
                     user.getEmail() + " уже зарегистрирован.");
         } else {
             Integer id = generatedId();
             user.setId(id);
-            users.put(user.getEmail(), user);
+            users.put(user.getId(), user);
             log.info("Добавлен пользователь " + user.getName());
         }
         return user;
@@ -45,8 +46,11 @@ public class UserController {
     public User put(@RequestBody User user) {
         if (!UserValidator.validate(user))
             throw new ValidationException("Ошибка валидации");
-        else users.put(user.getEmail(), user);
-        log.info("Обновлены данные пользователя " + user.getEmail());
+        else {
+            UserValidator.noFoundUser(user, users);
+            users.put(user.getId(), user);
+            log.info("Обновлены данные пользователя " + user.getEmail());
+        }
         return user;
     }
 

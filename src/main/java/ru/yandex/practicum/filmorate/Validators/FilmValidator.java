@@ -2,9 +2,11 @@ package ru.yandex.practicum.filmorate.Validators;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.yandex.practicum.filmorate.Exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 public class FilmValidator {
 
@@ -24,5 +26,12 @@ public class FilmValidator {
             log.error("Длительность меньше 0");
             return false;
         } else return true;
+    }
+
+    public static void noFoundFilm(Film film, Map<Integer, Film> films) {
+        if (!films.containsKey(film.getId())) {
+            log.info("Проверка, существует ли фильм");
+            throw new ValidationException("Такого фильма нет");
+        }
     }
 }
