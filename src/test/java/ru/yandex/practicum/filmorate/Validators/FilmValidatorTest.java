@@ -12,14 +12,14 @@ class FilmValidatorTest {
     Film film;
 
     void initFilm() {
-        film = new Film(1, "Унесенные ветром", "Описание до 200 символов",
+        film = new Film("Унесенные ветром", "Описание до 200 символов",
                 LocalDate.of(1985, 12,22), 200);
     }
 
     @Test
     void filmNameCantBeEmpty() {
         initFilm();
-        Film film2 = new Film(1, "", "Описание до 200 символов",
+        Film film2 = new Film( "", "Описание до 200 символов",
                 LocalDate.of(1985, 12,22), 200);
         assertTrue(FilmValidator.validate(film));
         assertFalse(FilmValidator.validate(film2));
@@ -28,7 +28,7 @@ class FilmValidatorTest {
     @Test
     void filmDescriptionCantBeMoreThan200Characters() {
         initFilm();
-        Film film2 = new Film(1, "Аватар", "Описание больше 200 символов. " +
+        Film film2 = new Film( "Аватар", "Описание больше 200 символов. " +
                 "Описание больше 200 символов. Описание больше 200 символов. Описание больше 200 символов. " +
                 "Описание больше 200 символов. Описание больше 200 символов. Описание больше 200 символов.",
                 LocalDate.of(2009, 12,22), 200);
@@ -39,9 +39,9 @@ class FilmValidatorTest {
     @Test
     void filmReleaseDateShouldBeAfter18951228() {
         initFilm();
-        Film film2 = new Film(1, "Аватар", "Описание до 200 символов",
+        Film film2 = new Film( "Аватар", "Описание до 200 символов",
                 LocalDate.of(1895, 12,27), 200);
-        Film film3 = new Film(1, "Аватар", "Описание до 200 символов",
+        Film film3 = new Film( "Аватар", "Описание до 200 символов",
                 LocalDate.of(1895, 12,28), 200);
         assertTrue(FilmValidator.validate(film));
         assertFalse(FilmValidator.validate(film2));
@@ -51,9 +51,9 @@ class FilmValidatorTest {
     @Test
     void filmDurationShouldBePositive() {
         initFilm();
-        Film film2 = new Film(1, "Аватар", "Описание до 200 символов",
+        Film film2 = new Film( "Аватар", "Описание до 200 символов",
                 LocalDate.of(1995, 12,27), -200);
-        Film film3 = new Film(1, "Аватар2", "Описание до 200 символов",
+        Film film3 = new Film( "Аватар2", "Описание до 200 символов",
                 LocalDate.of(1995, 12,28), 0);
         assertTrue(FilmValidator.validate(film));
         assertFalse(FilmValidator.validate(film2));

@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.Validators.UserValidator;
 import ru.yandex.practicum.filmorate.model.User;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,10 +18,11 @@ import java.util.Map;
 public class UserController {
     private final Map<String, User> users = new HashMap<>();
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
+    private Integer userId = 0;
 
     @GetMapping
     public Collection<User> allUsers() {
-        return users.values();
+        return new ArrayList<>(users.values());
     }
 
     @PostMapping
@@ -30,9 +32,12 @@ public class UserController {
         if (users.containsKey(user.getEmail())) {
             throw new UserAlreadyExistException("Пользователь с электронной почтой " +
                     user.getEmail() + " уже зарегистрирован.");
+        } else {
+            Integer id = generatedId();
+            user.setId(id);
+            users.put(user.getEmail(), user);
+            log.info("Добавлен пользователь " + user.getName());
         }
-        else users.put(user.getEmail(), user);
-        log.info("Добавлен пользователь " + user.getName());
         return user;
     }
 
@@ -44,4 +49,10 @@ public class UserController {
         log.info("Обновлены данные пользователя " + user.getEmail());
         return user;
     }
+
+    public Integer generatedId() {
+        userId++;
+        return userId;
+    }
+
 }
