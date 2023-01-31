@@ -36,8 +36,6 @@ public class UserController {
         } else {
             Integer id = generatedId();
             user.setId(id);
-            if (user.getName() == null || user.getName().isBlank())
-                user.setName(user.getLogin());
             users.put(user.getId(), user);
             log.info("Добавлен пользователь " + user.getName());
         }

@@ -15,6 +15,8 @@ public class UserValidator {
     private static String emailPattern = "^(.+)@(\\S+)$";
 
     public static boolean validate(User user) {
+        if (user.getName() == null || user.getName().isBlank())
+            user.setName(user.getLogin());
         if (user.getEmail().isBlank() || user.getEmail() == null) {
             log.error("Поле почты не заполнено");
             return false;
