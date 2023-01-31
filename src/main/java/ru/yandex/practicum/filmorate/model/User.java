@@ -14,18 +14,10 @@ public class User {
     private final LocalDate birthday;
 
     // Без данного инициированного конструктора почему-то не создать объект в тестах, не принимаеи имя юзера
-//    public User(String email, String login, String name, LocalDate birthday) {
-//        this.email = email;
-//        this.login = login;
-//        this.name = name;
-//        this.birthday = birthday;
-//    }
-
-    public User(String email, String login, LocalDate birthday) {
+    public User(String email, String login, String name, LocalDate birthday) {
         this.email = email;
         this.login = login;
-        this.name = login;
+        this.name = name;
         this.birthday = birthday;
     }
-
 }
