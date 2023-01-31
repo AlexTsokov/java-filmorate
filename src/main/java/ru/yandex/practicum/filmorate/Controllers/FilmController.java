@@ -23,7 +23,7 @@ public class FilmController {
         return films.values();
     }
 
-    @PostMapping(value = "/film")
+    @PostMapping
     public Film create(@RequestBody Film film) {
         if (!FilmValidator.validate(film))
             throw new ValidationException("Ошибка валидации");

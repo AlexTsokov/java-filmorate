@@ -23,7 +23,7 @@ public class UserController {
         return users.values();
     }
 
-    @PostMapping(value = "/user")
+    @PostMapping
     public User create(@RequestBody User user) {
         if (!UserValidator.validate(user))
             throw new ValidationException("Ошибка валидации");
