@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.Controllers;
 
-import org.apache.el.util.Validation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.yandex.practicum.filmorate.Exception.UserAlreadyExistException;
@@ -47,7 +46,7 @@ public class UserController {
         if (!UserValidator.validate(user))
             throw new ValidationException("Ошибка валидации");
         else {
-            UserValidator.noFoundUser(user, users);
+            UserValidator.checkIfUserExists(user, users);
             users.put(user.getId(), user);
             log.info("Обновлены данные пользователя " + user.getEmail());
         }

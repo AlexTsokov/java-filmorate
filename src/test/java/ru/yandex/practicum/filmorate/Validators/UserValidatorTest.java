@@ -12,16 +12,16 @@ class UserValidatorTest {
     User user;
 
     void initUser() {
-        user = new User("w3ww5@ff.ru", "Login", "Alex",
+        user = new User(null,"w3ww5@ff.ru", "Login", "Alex",
                 LocalDate.of(1985, 12, 22));
     }
 
     @Test
     void userEmailCantBeEmpty() {
         initUser();
-        User user2 = new User("", "Login", "Alex",
+        User user2 = new User(null,"", "Login", "Alex",
                 LocalDate.of(1985, 12, 22));
-        User user3 = new User(" ", "Login", "Alex",
+        User user3 = new User(null," ", "Login", "Alex",
                 LocalDate.of(1985, 12, 22));
         assertTrue(UserValidator.validate(user));
         assertFalse(UserValidator.validate(user2));
@@ -30,20 +30,29 @@ class UserValidatorTest {
     @Test
     void userLoginCantBeEmpty() {
         initUser();
-        User user2 = new User("w3ww5@ff.ru", "", "Alex",
+        User user2 = new User(null,"w3ww5@ff.ru", "", "Alex",
                 LocalDate.of(1985, 12, 22));
-        User user3 = new User("w3ww5@ff.ru", " ", "Alex",
+        User user3 = new User(null,"w3ww5@ff.ru", " ", "Alex",
                 LocalDate.of(1985, 12, 22));
         assertTrue(UserValidator.validate(user));
         assertFalse(UserValidator.validate(user2));
         assertFalse(UserValidator.validate(user3));
     }
 
+    @Test
+    void userLoginCantHaveWhiteSpace() {
+        initUser();
+        User user2 = new User(null,"w3ww5@ff.ru", "Don Matron", "Alex",
+                LocalDate.of(1985, 12, 22));
+        assertTrue(UserValidator.validate(user));
+        assertFalse(UserValidator.validate(user2));
+    }
+
 
     @Test
     void userNameCanBeEmpty() {
         initUser();
-        User user2 = new User("w3ww5@ff.ru", "Login", "",
+        User user2 = new User(null,"w3ww5@ff.ru", "Login", "",
                 LocalDate.of(1985, 12, 22));
         assertTrue(UserValidator.validate(user));
         assertTrue(UserValidator.validate(user2));
@@ -53,7 +62,7 @@ class UserValidatorTest {
     @Test
     void userBirthDateCantBeInFuture() {
         initUser();
-        User user2 = new User("w3ww5@ff.ru", "Login", "",
+        User user2 = new User(null,"w3ww5@ff.ru", "Login", "",
                 LocalDate.of(2028, 12, 22));
         assertTrue(UserValidator.validate(user));
         assertFalse(UserValidator.validate(user2));

@@ -26,14 +26,17 @@ class FilmValidatorTest {
     }
 
     @Test
-    void filmDescriptionCantBeMoreThan200Characters() {
+    void filmDescriptionCantBeNullOrMoreThan200Characters() {
         initFilm();
         Film film2 = new Film( "Аватар", "Описание больше 200 символов. " +
                 "Описание больше 200 символов. Описание больше 200 символов. Описание больше 200 символов. " +
                 "Описание больше 200 символов. Описание больше 200 символов. Описание больше 200 символов.",
                 LocalDate.of(2009, 12,22), 200);
+        Film film3 = new Film( "Аватар", null,
+                LocalDate.of(2009, 12,22), 200);
         assertTrue(FilmValidator.validate(film));
         assertFalse(FilmValidator.validate(film2));
+        assertFalse(FilmValidator.validate(film3));
     }
 
     @Test

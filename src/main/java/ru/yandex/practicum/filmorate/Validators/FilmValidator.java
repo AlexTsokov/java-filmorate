@@ -11,16 +11,17 @@ import java.util.Map;
 public class FilmValidator {
 
     private static final Logger log = LoggerFactory.getLogger(FilmValidator.class);
+    private static final LocalDate earliestReleaseDate = LocalDate.of(1895, 12, 28);
 
     public static boolean validate(Film film) {
-        if (film.getName().isBlank()) {
+        if (film.getName() == null || film.getName().isBlank()) {
             log.error("Имя фильма не заполнено");
             return false;
-        } else if (film.getDescription().length() > 200) {
-            log.error("Длина описания больше 200 символов");
+        } else if (film.getDescription() == null || film.getDescription().length() > 200) {
+            log.error("Некорректное описание");
             return false;
-        } else if (film.getReleaseDate().isBefore(LocalDate.parse("1895-12-28"))) {
-            log.error("Дата релиза раньше 1895-12-28");
+        } else if (film.getReleaseDate() == null || film.getReleaseDate().isBefore(earliestReleaseDate)) {
+            log.error("Дата релиза незаполнена или раньше 1895-12-28");
             return false;
         } else if (film.getDuration() <= 0) {
             log.error("Длительность меньше 0");
@@ -28,7 +29,7 @@ public class FilmValidator {
         } else return true;
     }
 
-    public static void noFoundFilm(Film film, Map<Integer, Film> films) {
+    public static void checkIfFilmExists(Film film, Map<Integer, Film> films) {
         if (!films.containsKey(film.getId())) {
             log.info("Проверка, существует ли фильм");
             throw new ValidationException("Такого фильма нет");

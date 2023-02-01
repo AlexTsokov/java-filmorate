@@ -46,7 +46,7 @@ public class FilmController {
         if (!FilmValidator.validate(film))
             throw new ValidationException("Ошибка валидации");
         else {
-            FilmValidator.noFoundFilm(film, films);
+            FilmValidator.checkIfFilmExists(film, films);
             films.put(film.getId(), film);
             log.info("Обновлены данные фильма " + film.getName());
         }
