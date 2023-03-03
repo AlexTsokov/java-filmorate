@@ -24,6 +24,14 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
+    public User getById(Integer id) {
+        if (!users.containsKey(id)) {
+            throw new NotFoundException("Такого пользователя нет");
+        }
+        return users.get(id);
+    }
+
+    @Override
     public User addUser(User user) {
         if (!UserValidator.validate(user))
             throw new ValidationException("Ошибка валидации");
@@ -41,13 +49,12 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User updateUser(User user) {
-        if (!UserValidator.validate(user))
-            throw new ValidationException("Ошибка валидации");
-        else {
-            UserValidator.checkIfUserExists(user, users);
-            users.put(user.getId(), user);
-            log.info("Обновлены данные пользователя " + user.getEmail());
+        if (!users.containsKey(user.getId())) {
+            throw new NotFoundException("Такого пользователя нет");
         }
+        UserValidator.checkIfUserExists(user, users);
+        users.put(user.getId(), user);
+        log.info("Успешное изменение пользователя");
         return user;
     }
 

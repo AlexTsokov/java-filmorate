@@ -32,7 +32,7 @@ public class FilmService {
         return new ResponseEntity<>(inMemoryFilmStorage.getFilms().get(filmId), HttpStatus.OK);
     }
 
-    public ResponseEntity<Film> deleteLike(Integer userId, Integer filmId) throws NotFoundException {
+    public ResponseEntity<Film> deleteLike(Integer filmId, Integer userId) throws NotFoundException {
         checkExistFilm(filmId);
         inMemoryFilmStorage.getFilms().get(filmId).getLikes().remove(userId);
         log.info("Лайк удален");

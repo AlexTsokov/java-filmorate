@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.Validators;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.yandex.practicum.filmorate.Exception.NotFoundException;
 import ru.yandex.practicum.filmorate.Exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -36,7 +37,7 @@ public class UserValidator {
     }
 
     public static void checkIfUserExists(User user, Map<Integer, User> users) {
-        if (!users.containsKey(user.getId())) {
+        if (user.getId() == null || !users.containsKey(user.getId())) {
             log.info("Проверка, существует ли пользователь");
             throw new ValidationException("Такого пользователя нет");
         }

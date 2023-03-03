@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.Service.FilmService;
@@ -25,6 +26,11 @@ public class FilmController {
         return filmService.inMemoryFilmStorage.getAllFilmsList();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Film> getUser(@PathVariable int id) {
+        return new ResponseEntity<>(filmService.inMemoryFilmStorage.getById(id), HttpStatus.OK);
+    }
+
     @PostMapping
     public Film create(@RequestBody Film film) {
         filmService.inMemoryFilmStorage.addFilm(film);
@@ -32,9 +38,9 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film put(@RequestBody Film film) {
+    public ResponseEntity put(@RequestBody Film film) {
         filmService.inMemoryFilmStorage.updateFilm(film);
-        return film;
+        return ResponseEntity.ok(film);
     }
 
     @DeleteMapping("/{filmId}")

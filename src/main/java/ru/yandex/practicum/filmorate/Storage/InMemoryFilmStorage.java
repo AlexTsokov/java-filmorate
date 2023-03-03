@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.Exception.ValidationException;
 import ru.yandex.practicum.filmorate.Exception.NotFoundException;
 import ru.yandex.practicum.filmorate.Validators.FilmValidator;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +32,14 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public Film getById(Integer id) {
+        if (!films.containsKey(id)) {
+            throw new NotFoundException("Такого фильма нет");
+        }
+        return films.get(id);
+    }
+
+    @Override
     public Film addFilm(Film film) {
         if (!FilmValidator.validate(film))
             throw new ValidationException("Ошибка валидации");
@@ -50,13 +57,12 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film updateFilm(Film film) {
-        if (!FilmValidator.validate(film))
-            throw new ValidationException("Ошибка валидации");
-        else {
+        if (!films.containsKey(film.getId())) {
+            throw new NotFoundException("Такого фильма нет");
+        }
             FilmValidator.checkIfFilmExists(film, films);
             films.put(film.getId(), film);
             log.info("Обновлены данные фильма " + film.getName());
-        }
         return film;
     }
 
