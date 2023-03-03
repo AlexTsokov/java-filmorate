@@ -1,61 +1,64 @@
 package ru.yandex.practicum.filmorate.Controllers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ru.yandex.practicum.filmorate.Exception.UserAlreadyExistException;
-import ru.yandex.practicum.filmorate.Exception.ValidationException;
-import ru.yandex.practicum.filmorate.Validators.UserValidator;
+import org.springframework.beans.factory.annotation.Autowired;
+import ru.yandex.practicum.filmorate.Service.UserService;
 import ru.yandex.practicum.filmorate.model.User;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private final Map<Integer, User> users = new HashMap<>();
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
-    private Integer userId = 0;
+
+    private final UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
-    public Collection<User> allUsers() {
-        return new ArrayList<>(users.values());
+    public List<User> allUsers() {
+        return userService.inMemoryUserStorage.getAllUsersList();
     }
 
     @PostMapping
     public User create(@RequestBody User user) {
-        if (!UserValidator.validate(user))
-            throw new ValidationException("Ошибка валидации");
-        if (users.containsKey(user.getId())) {
-            throw new UserAlreadyExistException("Пользователь с электронной почтой " +
-                    user.getEmail() + " уже зарегистрирован.");
-        } else {
-            Integer id = generatedId();
-            user.setId(id);
-            users.put(user.getId(), user);
-            log.info("Добавлен пользователь " + user.getName());
-        }
+        userService.inMemoryUserStorage.addUser(user);
         return user;
     }
 
     @PutMapping
     public User put(@RequestBody User user) {
-        if (!UserValidator.validate(user))
-            throw new ValidationException("Ошибка валидации");
-        else {
-            UserValidator.checkIfUserExists(user, users);
-            users.put(user.getId(), user);
-            log.info("Обновлены данные пользователя " + user.getEmail());
-        }
+        userService.inMemoryUserStorage.updateUser(user);
         return user;
     }
 
-    public Integer generatedId() {
-        userId++;
-        return userId;
+    @DeleteMapping("/{userId}")
+    public void delete(@PathVariable Integer userId) {
+        userService.inMemoryUserStorage.deleteUser(userId);
     }
 
+    @GetMapping("/{id}/friends")
+    public List<User> getFriends(@PathVariable Integer id) {
+        return userService.getFriendsList(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
+        return userService.getCommonFriendsList(id, otherId);
+    }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    public List<User> addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+        userService.addFriend(id, friendId);
+        return userService.getFriendsList(id);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public List<User> deleteFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+        userService.deleteFriend(id, friendId);
+        return userService.getFriendsList(id);
+    }
 }
