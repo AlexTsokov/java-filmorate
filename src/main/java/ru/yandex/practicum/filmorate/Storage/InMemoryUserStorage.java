@@ -19,10 +19,6 @@ public class InMemoryUserStorage implements UserStorage {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private Integer userId = 0;
 
-    public Map<Integer, User> getUsers() {
-        return users;
-    }
-
     @Override
     public User getById(Integer id) {
         if (!users.containsKey(id)) {

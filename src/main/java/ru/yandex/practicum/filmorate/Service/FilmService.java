@@ -47,12 +47,12 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
-    private int compare (Film film1, Film film2){
-        return (film1.getLikes().size() - film2.getLikes().size())*-1;
+    private int compare(Film film1, Film film2) {
+        return (film1.getLikes().size() - film2.getLikes().size()) * -1;
     }
 
     public void checkExistFilm(Integer filmId) {
-        if (!inMemoryFilmStorage.getFilms().containsKey(filmId)) {
+        if (inMemoryFilmStorage.getById(filmId) == null) {
             throw new NotFoundException("Фильм с таким ID не найден.");
         }
     }

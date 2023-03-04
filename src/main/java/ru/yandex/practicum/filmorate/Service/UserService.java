@@ -66,7 +66,7 @@ public class UserService {
     }
 
     public void checkExistUser(Integer userId) {
-        if (!inMemoryUserStorage.getUsers().containsKey(userId)) {
+        if (inMemoryUserStorage.getById(userId) == null) {
             throw new NotFoundException("Пользователь с таким ID не найден.");
         }
     }
