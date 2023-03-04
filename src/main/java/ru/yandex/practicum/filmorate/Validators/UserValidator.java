@@ -39,7 +39,7 @@ public class UserValidator {
     public static void checkIfUserExists(User user, Map<Integer, User> users) {
         if (user.getId() == null || !users.containsKey(user.getId())) {
             log.info("Проверка, существует ли пользователь");
-            throw new ValidationException("Такого пользователя нет");
+            throw new NotFoundException("Такого пользователя нет");
         }
     }
 

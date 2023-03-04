@@ -27,24 +27,24 @@ public class UserService {
     public void addFriend(Integer userId, Integer friendId) {
         checkExistUser(userId);
         checkExistUser(friendId);
-        inMemoryUserStorage.getUsers().get(userId).getFriends().add(friendId);
-        inMemoryUserStorage.getUsers().get(friendId).getFriends().add(userId);
+        inMemoryUserStorage.getById(userId).getFriends().add(friendId);
+        inMemoryUserStorage.getById(friendId).getFriends().add(userId);
         log.info("Новый друг добавлен");
     }
 
     public void deleteFriend(Integer userId, Integer friendId) {
         checkExistUser(userId);
         checkExistUser(friendId);
-        inMemoryUserStorage.getUsers().get(userId).getFriends().remove(friendId);
-        inMemoryUserStorage.getUsers().get(friendId).getFriends().remove(userId);
+        inMemoryUserStorage.getById(userId).getFriends().remove(friendId);
+        inMemoryUserStorage.getById(friendId).getFriends().remove(userId);
         log.info("Друг удален");
     }
 
     public List<User> getFriendsList(Integer userId) {
         checkExistUser(userId);
         List<User> userFriends = new ArrayList<>();
-        for (Integer id : inMemoryUserStorage.getUsers().get(userId).getFriends()) {
-            userFriends.add(inMemoryUserStorage.getUsers().get(id));
+        for (Integer id : inMemoryUserStorage.getById(userId).getFriends()) {
+            userFriends.add(inMemoryUserStorage.getById(id));
         }
         return userFriends;
     }
@@ -53,14 +53,14 @@ public class UserService {
         checkExistUser(userId);
         checkExistUser(otherId);
         List<User> commonFriends = new ArrayList<>();
-        Set<Integer> userList = inMemoryUserStorage.getUsers().get(userId).getFriends();
-        Set<Integer> otherList = inMemoryUserStorage.getUsers().get(otherId).getFriends();
+        Set<Integer> userList = inMemoryUserStorage.getById(userId).getFriends();
+        Set<Integer> otherList = inMemoryUserStorage.getById(otherId).getFriends();
         Set<Integer> commonListIds = userList.stream()
                 .distinct()
                 .filter(otherList::contains)
                 .collect(Collectors.toSet());
         for (Integer id : commonListIds) {
-            commonFriends.add(inMemoryUserStorage.getUsers().get(id));
+            commonFriends.add(inMemoryUserStorage.getById(id));
         }
         return commonFriends;
     }

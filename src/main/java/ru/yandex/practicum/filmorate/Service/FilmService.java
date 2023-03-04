@@ -27,16 +27,16 @@ public class FilmService {
 
     public ResponseEntity<Film> addLike(Integer userId, Integer filmId) throws NotFoundException {
         checkExistFilm(filmId);
-        inMemoryFilmStorage.getFilms().get(filmId).getLikes().add(userId);
+        inMemoryFilmStorage.getById(filmId).getLikes().add(userId);
         log.info("Лайк добавлен");
-        return new ResponseEntity<>(inMemoryFilmStorage.getFilms().get(filmId), HttpStatus.OK);
+        return new ResponseEntity<>(inMemoryFilmStorage.getById(filmId), HttpStatus.OK);
     }
 
     public ResponseEntity<Film> deleteLike(Integer filmId, Integer userId) throws NotFoundException {
         checkExistFilm(filmId);
-        inMemoryFilmStorage.getFilms().get(filmId).getLikes().remove(userId);
+        inMemoryFilmStorage.getById(filmId).getLikes().remove(userId);
         log.info("Лайк удален");
-        return new ResponseEntity<>(inMemoryFilmStorage.getFilms().get(filmId), HttpStatus.OK);
+        return new ResponseEntity<>(inMemoryFilmStorage.getById(filmId), HttpStatus.OK);
     }
 
     public List<Film> getTopLikedFilmsList(Integer count) {

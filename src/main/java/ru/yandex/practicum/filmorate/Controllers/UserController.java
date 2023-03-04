@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.Service.UserService;
 import ru.yandex.practicum.filmorate.model.User;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.*;
 
 @RestController
@@ -29,13 +28,13 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@Valid @RequestBody User user) {
+    public User create(@RequestBody User user) {
         userService.inMemoryUserStorage.addUser(user);
         return user;
     }
 
     @PutMapping
-    public ResponseEntity put(@Valid @RequestBody User user) {
+    public ResponseEntity put(@RequestBody User user) {
         userService.inMemoryUserStorage.updateUser(user);
         return ResponseEntity.ok(user);
     }

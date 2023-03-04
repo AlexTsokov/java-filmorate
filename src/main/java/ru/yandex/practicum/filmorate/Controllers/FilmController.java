@@ -27,7 +27,7 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Film> getUser(@PathVariable int id) {
+    public ResponseEntity<Film> getFilm(@PathVariable int id) {
         return new ResponseEntity<>(filmService.inMemoryFilmStorage.getById(id), HttpStatus.OK);
     }
 

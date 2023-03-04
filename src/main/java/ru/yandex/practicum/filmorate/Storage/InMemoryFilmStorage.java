@@ -41,8 +41,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film addFilm(Film film) {
-        if (!FilmValidator.validate(film))
-            throw new ValidationException("Ошибка валидации");
+        if (!FilmValidator.validate(film)) throw new ValidationException("Ошибка валидации");
         if (films.containsKey(film.getId())) {
             throw new FilmAlreadyExistException("Фильм " +
                     film.getName() + " уже добавлен.");
@@ -57,12 +56,10 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film updateFilm(Film film) {
-        if (!films.containsKey(film.getId())) {
-            throw new NotFoundException("Такого фильма нет");
-        }
-            FilmValidator.checkIfFilmExists(film, films);
-            films.put(film.getId(), film);
-            log.info("Обновлены данные фильма " + film.getName());
+        if (!FilmValidator.validate(film)) throw new ValidationException("Ошибка валидации");
+        FilmValidator.checkIfFilmExists(film, films);
+        films.put(film.getId(), film);
+        log.info("Обновлены данные фильма " + film.getName());
         return film;
     }
 

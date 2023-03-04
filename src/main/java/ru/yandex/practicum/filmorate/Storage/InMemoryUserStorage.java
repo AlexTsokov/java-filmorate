@@ -33,8 +33,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User addUser(User user) {
-        if (!UserValidator.validate(user))
-            throw new ValidationException("Ошибка валидации");
+        if (!UserValidator.validate(user)) throw new ValidationException("Ошибка валидации");
         if (users.containsKey(user.getId())) {
             throw new UserAlreadyExistException("Пользователь с электронной почтой " +
                     user.getEmail() + " уже зарегистрирован.");
@@ -49,9 +48,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User updateUser(User user) {
-        if (!users.containsKey(user.getId())) {
-            throw new NotFoundException("Такого пользователя нет");
-        }
+        if (!UserValidator.validate(user)) throw new ValidationException("Ошибка валидации");
         UserValidator.checkIfUserExists(user, users);
         users.put(user.getId(), user);
         log.info("Успешное изменение пользователя");
