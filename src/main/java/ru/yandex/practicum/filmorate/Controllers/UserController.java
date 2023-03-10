@@ -24,29 +24,29 @@ public class UserController {
 
     @GetMapping
     public List<User> allUsers() {
-        return userService.inMemoryUserStorage.getAllUsersList();
+        return userService.userStorage.getAllUsersList();
     }
 
     @PostMapping
     public User create(@RequestBody User user) {
-        userService.inMemoryUserStorage.addUser(user);
+        userService.addUser(user);
         return user;
     }
 
     @PutMapping
     public ResponseEntity put(@RequestBody User user) {
-        userService.inMemoryUserStorage.updateUser(user);
+        userService.updateUser(user);
         return ResponseEntity.ok(user);
     }
 
     @DeleteMapping("/{userId}")
     public void delete(@PathVariable Integer userId) {
-        userService.inMemoryUserStorage.deleteUser(userId);
+        userService.deleteById(userId);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUser(@PathVariable int id) {
-        return new ResponseEntity<>(userService.inMemoryUserStorage.getById(id), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getById(id), HttpStatus.OK);
     }
 
     @GetMapping("/{id}/friends")

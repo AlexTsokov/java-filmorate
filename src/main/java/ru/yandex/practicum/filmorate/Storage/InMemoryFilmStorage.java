@@ -35,6 +35,21 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public Film addLike(int filmId, int userId) {
+        return null;
+    }
+
+    @Override
+    public Film removeLike(int filmId, int userId) {
+        return null;
+    }
+
+    @Override
+    public List<Film> getBestFilms(int count) {
+        return null;
+    }
+
+    @Override
     public Film addFilm(Film film) {
         if (!FilmValidator.validate(film)) throw new ValidationException("Ошибка валидации");
         if (films.containsKey(film.getId())) {
@@ -59,9 +74,10 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void deleteFilm(Integer id) {
+    public Film deleteFilm(Integer id) {
         if (films.containsKey(id)) {
             films.remove(id);
+            return getById(id);
         } else {
             throw new NotFoundException("Такого фильма нет");
         }

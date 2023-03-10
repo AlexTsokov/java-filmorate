@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.Service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.Exception.NotFoundException;
@@ -10,50 +10,48 @@ import ru.yandex.practicum.filmorate.Storage.FilmStorage;
 import ru.yandex.practicum.filmorate.model.Film;
 import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class FilmService {
 
-    public final FilmStorage inMemoryFilmStorage;
-    private final Logger log = LoggerFactory.getLogger(FilmService.class);
+    public final FilmStorage filmStorage;
 
     @Autowired
-    public FilmService(FilmStorage inMemoryFilmStorage) {
-        this.inMemoryFilmStorage = inMemoryFilmStorage;
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage) {
+        this.filmStorage = filmStorage;
     }
 
     public ResponseEntity<Film> addLike(Integer userId, Integer filmId) throws NotFoundException {
-        checkExistFilm(filmId);
-        inMemoryFilmStorage.getById(filmId).getLikes().add(userId);
+        filmStorage.addLike(filmId, userId);
         log.info("Лайк добавлен");
-        return new ResponseEntity<>(inMemoryFilmStorage.getById(filmId), HttpStatus.OK);
+        return new ResponseEntity<>(filmStorage.getById(filmId), HttpStatus.OK);
     }
 
     public ResponseEntity<Film> deleteLike(Integer filmId, Integer userId) throws NotFoundException {
-        checkExistFilm(filmId);
-        inMemoryFilmStorage.getById(filmId).getLikes().remove(userId);
+        filmStorage.removeLike(filmId, userId);
         log.info("Лайк удален");
-        return new ResponseEntity<>(inMemoryFilmStorage.getById(filmId), HttpStatus.OK);
+        return new ResponseEntity<>(filmStorage.getById(filmId), HttpStatus.OK);
     }
 
     public List<Film> getTopLikedFilmsList(Integer count) {
-        List<Film> popular = new ArrayList<>(inMemoryFilmStorage.getAllFilmsList());
-        return popular.stream()
-                .sorted(this::compare)
-                .limit(count)
-                .collect(Collectors.toList());
+        return filmStorage.getBestFilms(count);
     }
 
-    private int compare(Film film1, Film film2) {
-        return (film1.getLikes().size() - film2.getLikes().size()) * -1;
+    public Film addFilm(Film film) {
+        return filmStorage.addFilm(film);
     }
 
-    public void checkExistFilm(Integer filmId) {
-        if (inMemoryFilmStorage.getById(filmId) == null) {
-            throw new NotFoundException("Фильм с таким ID не найден.");
-        }
+    public Film updateFilm(Film film) {
+        return filmStorage.updateFilm(film);
+    }
+
+    public Film getFilmById(int id) {
+        return filmStorage.getById(id);
+    }
+
+    public Film deleteById(int id) {
+        return filmStorage.deleteFilm(id);
     }
 }

@@ -52,12 +52,33 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void deleteUser(Integer id) {
+    public User deleteUser(Integer id) {
         if (users.containsKey(id)) {
             users.remove(id);
         } else {
             throw new NotFoundException("Пользователь не найден");
         }
+        return null;
+    }
+
+    @Override
+    public List<Integer> addFriendship(int firstId, int secondId) {
+        return null;
+    }
+
+    @Override
+    public List<Integer> removeFriendship(int firstId, int secondId) {
+        return null;
+    }
+
+    @Override
+    public List<User> getFriendsListById(int id) {
+        return null;
+    }
+
+    @Override
+    public List<User> getSharedFriendsList(int firstId, int secondId) {
+        return null;
     }
 
     public Integer generatedId() {
