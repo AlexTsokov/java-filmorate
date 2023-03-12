@@ -132,7 +132,7 @@ public class UserDbStorage implements UserStorage {
         final String sqlQuery = "SELECT user_id, email, login, name, birthday " +
                 "FROM USERS " +
                 "LEFT JOIN friendship mf on users.user_id = mf.other_friend_id " +
-                "where friend_id = ? AND status LIKE 'DISAPPROVED'";
+                "where friend_id = ? AND status='DISAPPROVED'";
 
         log.info("Список друзей пользователя отправлен", id);
         return jdbcTemplate.query(sqlQuery, this::makeUser, id);
@@ -163,11 +163,10 @@ public class UserDbStorage implements UserStorage {
     }
 
     private void checkIfExist(int firstId, int secondId) {
-        final String check = "SELECT * FROM users WHERE user_id = ?";
-        SqlRowSet followingRow = jdbcTemplate.queryForRowSet(check, firstId);
-        SqlRowSet followerRow = jdbcTemplate.queryForRowSet(check, secondId);
-
-        if (!followingRow.next() || !followerRow.next()) {
+        final String check = "SELECT 1 where exists(select * FROM users WHERE user_id=?) " +
+                "and exists(select * FROM users WHERE user_id=?)";
+        SqlRowSet followingRow = jdbcTemplate.queryForRowSet(check, firstId, secondId);
+        if (!followingRow.next()) {
             log.warn("Пользователи не найдены", firstId, secondId);
             throw new NotFoundException("Пользователи не найдены");
         }

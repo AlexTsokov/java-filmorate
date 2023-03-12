@@ -80,10 +80,8 @@ public class FilmDbStorage implements FilmStorage {
                 "duration = ?" +
                 "WHERE film_id = ?";
         if (film.getMpa() != null) {
-            final String deleteMpa = "DELETE FROM films_mpa WHERE films_id = ?";
-            final String updateMpa = "INSERT INTO films_mpa (films_id, rating_mpa_id) VALUES (?, ?)";
-            jdbcTemplate.update(deleteMpa, film.getId());
-            jdbcTemplate.update(updateMpa, film.getId(), film.getMpa().getId());
+            final String updateMpa = "UPDATE films_mpa SET rating_mpa_id = ? WHERE films_id = ?";
+            jdbcTemplate.update(updateMpa, film.getMpa().getId(), film.getId());
         }
         if (film.getGenres() != null) {
             final String deleteGenresQuery = "DELETE FROM film_genre WHERE film_id = ?";
@@ -97,7 +95,7 @@ public class FilmDbStorage implements FilmStorage {
                 }
             }
         }
-        jdbcTemplate.update(updateQuery, film.getName(), film.getDescription(), film.getReleaseDate(),film.getDuration(),film.getId());
+        jdbcTemplate.update(updateQuery, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getId());
         film.setMpa(findMpa(film.getId()));
         film.setGenres(findGenres(film.getId()));
         log.info("Фильм обновлен ", film.getId());
@@ -126,19 +124,19 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film addLike(int filmId, int userId) {
         checkIfExist(filmId, userId);
-        final String sqlQuery = "INSERT INTO films_likes (film_id_for_like, user_id_for_like) values (?,?)";
+        final String sqlQuery = "INSERT INTO likes (films_id, users_id) values (?,?)";
         jdbcTemplate.update(sqlQuery, filmId, userId);
-        log.info("Лайк поставлен");
+        log.info("Лайк от пользователя " + userId + " поставлен фильму " + filmId);
         return getById(filmId);
     }
 
     @Override
     public Film removeLike(int filmId, int userId) {
         checkIfExist(filmId, userId);
-        final String sqlQuery = "DELETE FROM films_likes " +
-                "WHERE film_id_for_like = ? AND user_id_for_like = ?";
+        final String sqlQuery = "DELETE FROM likes " +
+                "WHERE films_id = ? AND users_id = ?";
         jdbcTemplate.update(sqlQuery, filmId, userId);
-        log.info("Лайк удалён");
+        log.info("Лайк от пользователя " + userId + " удален у фильма " + filmId);
         return getById(filmId);
     }
 
@@ -146,12 +144,12 @@ public class FilmDbStorage implements FilmStorage {
     public List<Film> getBestFilms(int count) {
         String sqlQuery = "SELECT film_id, name, description, release_date, duration " +
                 "FROM films " +
-                "LEFT JOIN films_likes fl ON films.film_id = fl.film_id_for_like " +
-                "group by films.film_id, fl.film_id_for_like IN ( " +
-                "    SELECT film_id_for_like " +
-                "    FROM films_likes " +
+                "LEFT JOIN likes fl ON films.film_id = fl.films_id " +
+                "group by films.film_id, fl.films_id IN ( " +
+                "    SELECT film_id " +
+                "    FROM likes " +
                 ") " +
-                "ORDER BY COUNT(fl.film_id_for_like) DESC " +
+                "ORDER BY COUNT(fl.films_id) DESC " +
                 "LIMIT ?";
 
         return jdbcTemplate.query(sqlQuery, this::makeFilm, count);
@@ -163,7 +161,6 @@ public class FilmDbStorage implements FilmStorage {
         final String description = resultSet.getString("description");
         final LocalDate releaseDate = resultSet.getDate("release_date").toLocalDate();
         int duration = resultSet.getInt("duration");
-
         return new Film(id, name, description, releaseDate, duration, findMpa(id), findGenres(id));
     }
 
@@ -184,7 +181,6 @@ public class FilmDbStorage implements FilmStorage {
                 "FROM mpa " +
                 "LEFT JOIN films_mpa MF ON mpa.mpa_id = mf.rating_mpa_id " +
                 "WHERE films_id = ?";
-
         return jdbcTemplate.queryForObject(mpaSqlQuery, this::makeMpa, filmId);
     }
 
@@ -193,19 +189,15 @@ public class FilmDbStorage implements FilmStorage {
                 "FROM genre " +
                 "LEFT JOIN film_genre fg on genre.genre_id = fg.genres_id " +
                 "WHERE film_id = ?";
-
         return jdbcTemplate.query(genresSqlQuery, this::makeGenre, filmId);
     }
 
     private void checkIfExist(int filmId, int userId) {
-        final String checkFilmQuery = "SELECT * FROM films WHERE film_id = ?";
-        final String checkUserQuery = "SELECT * FROM users WHERE user_id = ?";
-
-        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(checkFilmQuery, filmId);
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet(checkUserQuery, userId);
-
-        if (!filmRows.next() || !userRows.next()) {
-            log.info("Фильм или пользователь не найден.", filmId, userId);
+        final String checkUserFilmQuery = "SELECT 1 where exists(select * FROM users WHERE user_id = ?) " +
+                "and exists(select * FROM films WHERE film_id = ?)";
+        SqlRowSet filmUserRows = jdbcTemplate.queryForRowSet(checkUserFilmQuery, userId, filmId);
+        if (!filmUserRows.next()) {
+            log.info("Фильм или пользователь не найден.", userId, filmId);
             throw new NotFoundException("Фильм или пользователь не найден");
         }
     }
