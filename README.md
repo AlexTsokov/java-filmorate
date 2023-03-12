@@ -1,6 +1,6 @@
 # java-filmorate
 Data-base diagram:
-<img src="C:\Users\Alex\Downloads\Untitled.png" title="Diagrqam" width="800"/>
+<img src="src/main/java/ru/yandex/practicum/filmorate/Images/db_diagram.png"/>
 Samples of queries:
 
 All users query:
